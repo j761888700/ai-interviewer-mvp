@@ -13,7 +13,7 @@ import {
   StopCircle,
   UploadCloud,
 } from "lucide-react";
-import { useMemo, useState, type ChangeEvent } from "react";
+import { useMemo, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import type {
   AnalysisResult,
   InterviewReport,
@@ -270,6 +270,17 @@ function App() {
       setError(err instanceof Error ? err.message : "面试追问失败。");
     } finally {
       setLoadingLabel("");
+    }
+  }
+
+  function handleAnswerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing) {
+      return;
+    }
+
+    event.preventDefault();
+    if (!loadingLabel && answer.trim()) {
+      void handleSendAnswer();
     }
   }
 
@@ -613,6 +624,7 @@ function App() {
                   <textarea
                     value={answer}
                     onChange={(event) => setAnswer(event.target.value)}
+                    onKeyDown={handleAnswerKeyDown}
                     placeholder="输入你的回答..."
                     disabled={Boolean(loadingLabel)}
                   />
