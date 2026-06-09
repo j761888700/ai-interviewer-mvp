@@ -4,7 +4,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import fs from "node:fs";
 import multer from "multer";
 import path from "node:path";
-import { PDFParse } from "pdf-parse";
+import pdfParse from "pdf-parse";
 import {
   AnalyzeRequestSchema,
   InterviewReportSchema,
@@ -105,33 +105,27 @@ app.post(
       throw new ApiError(400, "invalid_pdf_type", "简历只支持 PDF 文件。");
     }
 
-    const parser = new PDFParse({ data: file.buffer });
+    const result = await pdfParse(file.buffer);
+    const text = result.text
+      .replace(/\r/g, "\n")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
 
-    try {
-      const result = await parser.getText();
-      const text = result.text
-        .replace(/\r/g, "\n")
-        .replace(/[ \t]+\n/g, "\n")
-        .replace(/\n{3,}/g, "\n\n")
-        .trim();
-
-      if (text.length < 40) {
-        throw new ApiError(
-          400,
-          "empty_pdf_text",
-          "这份 PDF 没有解析出足够文本，可能是扫描件或图片版简历。",
-        );
-      }
-
-      res.json({
-        fileName: normalizedFileName,
-        text,
-        charCount: text.length,
-        pageCount: "total" in result ? result.total : null,
-      });
-    } finally {
-      await parser.destroy();
+    if (text.length < 40) {
+      throw new ApiError(
+        400,
+        "empty_pdf_text",
+        "这份 PDF 没有解析出足够文本，可能是扫描件或图片版简历。",
+      );
     }
+
+    res.json({
+      fileName: normalizedFileName,
+      text,
+      charCount: text.length,
+      pageCount: result.numpages ?? null,
+    });
   }),
 );
 
