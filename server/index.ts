@@ -1,6 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { type NextFunction, type Request, type Response } from "express";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import multer from "multer";
 import path from "node:path";
@@ -153,7 +154,7 @@ app.post(
     const body = StartInterviewRequestSchema.parse(req.body);
     const first = await createOpeningQuestion(body.analysis);
     const firstPhase = body.analysis.interviewPlan[0]?.phase || "opening";
-    const sessionId = crypto.randomUUID();
+    const sessionId = randomUUID();
     const firstQuestion = message("interviewer", first.content, firstPhase, first.competency);
     const state: InterviewState = {
       sessionId,
