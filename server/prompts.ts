@@ -110,7 +110,8 @@ export async function analyzeInputs(
 - starterQuestion 必须是可直接问候选人的一句话。
 - 顶层字段只能是 job、candidate、match、interviewPlan。
 - interviewPlan 必须是数组，不能是对象。
-- 所有数组字段即使只有一项也必须返回数组；缺信息时返回空数组或“不明”，不要省略字段。
+- AnalysisResult 里的所有字符串字段必须返回字符串；缺信息时返回“不明”，绝对不要返回 null。
+- 所有数组字段即使只有一项也必须返回数组；缺信息时返回空数组，不要省略字段，不要返回 null。
 
 必须严格按这个 JSON 形状输出：
 {

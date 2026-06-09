@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+const UnknownTextSchema = z.preprocess(
+  (value) => (value === null || value === undefined ? "不明" : value),
+  z.string(),
+);
+
+const TextArraySchema = z.preprocess(
+  (value) => (value === null || value === undefined ? [] : value),
+  z.array(UnknownTextSchema),
+);
+
 export const InterviewPhaseSchema = z.enum([
   "opening",
   "background_check",
@@ -19,38 +29,38 @@ export const NextActionSchema = z.enum([
 
 export const AnalysisResultSchema = z.object({
   job: z.object({
-    title: z.string(),
-    seniority: z.string(),
-    responsibilities: z.array(z.string()),
-    requiredSkills: z.array(z.string()),
-    preferredSkills: z.array(z.string()),
-    evaluationCriteria: z.array(z.string()),
+    title: UnknownTextSchema,
+    seniority: UnknownTextSchema,
+    responsibilities: TextArraySchema,
+    requiredSkills: TextArraySchema,
+    preferredSkills: TextArraySchema,
+    evaluationCriteria: TextArraySchema,
   }),
   candidate: z.object({
-    name: z.string(),
-    currentRole: z.string(),
+    name: UnknownTextSchema,
+    currentRole: UnknownTextSchema,
     yearsExperience: z.number().nullable(),
-    keyProjects: z.array(z.string()),
-    skills: z.array(z.string()),
-    unclearClaims: z.array(z.string()),
-    resumeSignals: z.array(z.string()),
+    keyProjects: TextArraySchema,
+    skills: TextArraySchema,
+    unclearClaims: TextArraySchema,
+    resumeSignals: TextArraySchema,
   }),
   match: z.object({
     score: z.number().min(0).max(100),
-    strengths: z.array(z.string()),
-    gaps: z.array(z.string()),
-    risks: z.array(z.string()),
-    focusAreas: z.array(z.string()),
+    strengths: TextArraySchema,
+    gaps: TextArraySchema,
+    risks: TextArraySchema,
+    focusAreas: TextArraySchema,
   }),
   interviewPlan: z.array(
     z.object({
       phase: InterviewPhaseSchema,
-      title: z.string(),
-      goal: z.string(),
-      competencies: z.array(z.string()),
-      starterQuestion: z.string(),
-      expectedEvidence: z.array(z.string()),
-      riskToProbe: z.string(),
+      title: UnknownTextSchema,
+      goal: UnknownTextSchema,
+      competencies: TextArraySchema,
+      starterQuestion: UnknownTextSchema,
+      expectedEvidence: TextArraySchema,
+      riskToProbe: UnknownTextSchema,
     }),
   ),
 });
