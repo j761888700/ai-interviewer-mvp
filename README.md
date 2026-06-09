@@ -28,10 +28,18 @@ DEEPSEEK_MODEL=deepseek-v4-flash
 
 项目也保留了 OpenAI-compatible 的备用配置。如果你之后要切回 OpenAI，可以改用 `OPENAI_API_KEY` 和 `OPENAI_MODEL`。
 
-## 启动步骤
+## 快速启动
 
 ```bash
+git clone https://github.com/j761888700/ai-interviewer-mvp.git
+cd ai-interviewer-mvp
 npm install
+cp .env.example .env.local
+```
+
+然后在 `.env.local` 里填入 `DEEPSEEK_API_KEY`，再启动：
+
+```bash
 npm run dev
 ```
 
